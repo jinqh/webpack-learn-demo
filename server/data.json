@@ -1,0 +1,46 @@
+{
+	"error": [],
+	"extra": [],
+	"data": [{
+		"source_id": 562,
+		"title": "第一章：webpack与构建发展简史",
+		"article_count": 9,
+		"id": "552"
+	}, {
+		"source_id": 563,
+		"title": "第二章：webpack基础用法",
+		"article_count": 12,
+		"id": "553"
+	}, {
+		"source_id": 580,
+		"title": "第三章：webpack进阶用法",
+		"article_count": 16,
+		"id": "667"
+	}, {
+		"source_id": 742,
+		"title": "第四章：编写可维护的webpack构建配置",
+		"article_count": 9,
+		"id": "731"
+	}, {
+		"source_id": 815,
+		"title": "第五章：webpack构建速度和体积优化策略",
+		"article_count": 12,
+		"id": "796"
+	}, {
+		"source_id": 859,
+		"title": "第六章：通过源代码掌握webpack打包原理",
+		"article_count": 9,
+		"id": "837"
+	}, {
+		"source_id": 869,
+		"title": "第七章：编写loader和插件",
+		"article_count": 7,
+		"id": "850"
+	}, {
+		"source_id": 880,
+		"title": "第八章：React全家桶和webpack开发商城项目",
+		"article_count": 10,
+		"id": "861"
+	}],
+	"code": 0
+}
