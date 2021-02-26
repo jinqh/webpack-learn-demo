@@ -8,6 +8,18 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin')
+// const SpeedMeasureWebpackPlugin = require('speed-measure-webpack-plugin')
+// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
+const TerserPlugin = require('terser-webpack-plugin')
+const webpack = require('webpack')
+const PurgeCSSPlugin = require('purgecss-webpack-plugin')
+// const HardSourceWebpackPlugin = require('hard-source-webpack-plugin')
+
+// const smp = new SpeedMeasureWebpackPlugin()
+
+const PATHS = {
+    src: path.join(__dirname, 'src')
+}
 
 const setMPA = () => {
     const entry = {}
@@ -58,10 +70,18 @@ module.exports = {
             // },
             {
                 test: /\.js$/,
+                include: path.resolve('src'),
                 use: [
-                    'babel-loader',
+                    {
+                        loader: 'thread-loader',
+                        options: {
+                            workers: 3
+                        }
+                    },
+                    'babel-loader?cacheDirectory=true',
                     // 'eslint-loader'
-                ]
+                ],
+                // exclude: path.resolve('node_modules')
             },
             {
                 test: /.css$/,
@@ -115,7 +135,30 @@ module.exports = {
                         options: {
                             name: '[name]_[hash:8].[ext]'
                         }
-                    }
+                    },
+                    // {
+                    //     loader: 'image-webpack-loader',
+                    //     options: {
+                    //       mozjpeg: {
+                    //         progressive: true,
+                    //       },
+                    //       // optipng.enabled: false will disable optipng
+                    //       optipng: {
+                    //         enabled: false,
+                    //       },
+                    //       pngquant: {
+                    //         quality: [0.65, 0.90],
+                    //         speed: 4
+                    //       },
+                    //       gifsicle: {
+                    //         interlaced: false,
+                    //       },
+                    //       // the webp option will enable WEBP
+                    //       webp: {
+                    //         quality: 75
+                    //       }
+                    //     }
+                    // }
                 ]
             },
             {
@@ -140,21 +183,29 @@ module.exports = {
             cssProcessor: require('cssnano')
         }),
         new CleanWebpackPlugin(),
-        new HtmlWebpackExternalsPlugin({
-            externals: [
-                {
-                    module: 'react',
-                    entry: 'https://now8.gtimg.com/now/lib/16.8.6/react.min.js',
-                    global: 'React',
-                },
-                {
-                    module: 'react-dom',
-                    entry: 'https://now8.gtimg.com/now/lib/16.8.6/react-dom.min.js',
-                    global: 'ReactDOM',
-                }
-            ],
+        // new HtmlWebpackExternalsPlugin({
+        //     externals: [
+        //         {
+        //             module: 'react',
+        //             entry: 'https://now8.gtimg.com/now/lib/16.8.6/react.min.js',
+        //             global: 'React',
+        //         },
+        //         {
+        //             module: 'react-dom',
+        //             entry: 'https://now8.gtimg.com/now/lib/16.8.6/react-dom.min.js',
+        //             global: 'ReactDOM',
+        //         }
+        //     ],
+        // }),
+        new FriendlyErrorsWebpackPlugin(),
+        new webpack.DllReferencePlugin({
+            manifest: require('./build/library/library.json')
         }),
-        new FriendlyErrorsWebpackPlugin()
+        new PurgeCSSPlugin({
+            paths: glob.sync(`${PATHS.src}/**/*`,  { nodir: true }),
+        }),
+        // new HardSourceWebpackPlugin()
+        // new BundleAnalyzerPlugin()
     ].concat(htmlWebpackPlugins),
     // optimization: {
     //     splitChunks: {
@@ -177,7 +228,21 @@ module.exports = {
                     minChunks: 2
                 }
             }
-        }
+        },
+        minimizer: [
+            new TerserPlugin({
+                parallel: true,
+            })
+        ]
     },
-    stats: 'errors-only'
+    // cache: true,
+    resolve: {
+        alias: {
+            'react': path.resolve(__dirname, './node_modules/react/umd/react.production.min.js'),
+            'react-dom': path.resolve(__dirname, './node_modules/react-dom/umd/react-dom.production.min.js'),
+        },
+        extensions: ['.js'],
+        mainFields: ['main']
+    }
+    // stats: 'errors-only'
 }
